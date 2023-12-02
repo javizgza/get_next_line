@@ -3,71 +3,99 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jazarago <jazarago@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jazarago <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/30 12:40:56 by jazarago          #+#    #+#             */
-/*   Updated: 2023/11/30 14:05:56 by jazarago         ###   ########.fr       */
+/*   Created: 2023/12/02 16:59:20 by jazarago          #+#    #+#             */
+/*   Updated: 2023/12/02 18:54:49 by jazarago         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include	"get_next_line.h"
+#include "get_next_line.h"
 
-char	*get_next_line1(int	i)
+char	*ft_saving_and_reading(int fd, char *saved)
 {
-	static char	*buffer;
-	char		*line;
+	char	*buff;
+	int		count_bytes;
 
-	buffer = read_file(i, buffer);
-	line = save_first_line(buffer);
-	buffer = delete_line(buffer);
-	return (line);
+	buff = malloc(BUFFER_SIZE + 1) * sizeof(char);
+	if (!buff)
+		return (free_the_saved(saved));
+	count_bytes = 1;
+	while (!ft_strchr(saved, '\n') && count_bytes != 0)
+	{
+		count_bytes = read(fd, buff, BUFFER_SIZE);
+		if (count_bytes == -1)
+		{
+			free(buff);
+			return (free_the_saved(saved));
+		}
+		buff[count_bytes] = '\0';
+		saved = ft_strjoin(saved, buff);
+	}
+	free(buff);
+	return (saved);
 }
 
-char	*get_next_line2(int i)
+char	*read_from_saved(char *saved)
 {
-	char		*line;
-	static char	*buffer;
+	int		i;
+	char	*lines_saved;
 
-	buffer = read_file(i, buffer);
-	if (!buffer)
+	i = 0;
+	if (saved[i] == '\0' || !saved)
 		return (NULL);
-	line = save_first_line(buffer);
-	if (!line)
+	while (saved[i] && saved[i] != '\n')
+		i++;
+	lines_saved = malloc((i + 1) * sizeof(char));
+	if (!lines_saved)
+		return (free_the_saved(saved));
+	while (saved[i] && saved[i] != '\n')
 	{
-		free(buffer);
-		buffer = NULL;
-		return (NULL);
+		lines_saved[i] = saved[i];
+		i++;
 	}
-	buffer = delete_line(buffer);
-	if (!buffer)
-		return (NULL);
-
-	return (line);
+	if (saved[i] == '\n')
+	{
+		lines_saved[i] = saved[i];
+		i++;
+	}
+	lines_saved = '\0';
+	return (lines_saved);
 }
 
-char	*get_next_line3(int i)
+char	*save_update(char *saved)
+{
+	int		i;
+	int		search;
+	char	*up_to_date;
+
+	search = 0;
+	while (saved[search] && saved[search] != '\n')
+		search++;
+	if (saved[search] == '\0')
+		return (free_the_saved(saved));
+	up_to_date = malloc((ft_strlen(saved) - search + 1));
+	if (!up_to_date)
+		return (free_the_saved(saved));
+	search = 0;
+	while (saved[search])
+		up_to_date[i++] = saved[search++];
+	up_to_date = '\0';
+	free(saved);
+	return (up_to_date);
+}
+
+char	*get_next_line(int fd)
 {
 	char		*line;
-	static char	*buffer;
+	static char	*save;
 
-	if (does_exist(buffer, '\n'));
-	{
-		line = save_first_line(buffer);
-		buffer = delete_line(buffer);
-		return (line);
-	}
-	buffer = read_file(i, buffer);
-	if (!buffer)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	line = save_first_line(buffer);
-	if (!line)
-	{
-		free(buffer);
-		buffer = NULL;
+	save = ft_saving_and_reading(fd, save);
+	if (!save)
 		return (NULL);
-	}
-	buffer = delete_line(buffer);
-	if (!buffer)
-		return (NULL);
+	line = read_from_saved(save);
+	save = save_update(save);
 	return (line);
 }
