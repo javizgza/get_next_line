@@ -6,12 +6,12 @@
 /*   By: jazarago <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/02 18:12:10 by jazarago          #+#    #+#             */
-/*   Updated: 2023/12/04 13:16:05 by jazarago         ###   ########.fr       */
+/*   Updated: 2023/12/04 15:25:58 by jazarago         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 
 # include <stdlib.h>
 # include <unistd.h>
@@ -20,6 +20,9 @@
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
+# endif
+# ifndef OPEN_MAX
+#  define OPEN_MAX 1042
 # endif
 
 char	*ft_saving_and_reading(int fd, char	*save);

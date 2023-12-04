@@ -6,11 +6,11 @@
 /*   By: jazarago <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 15:07:54 by jazarago          #+#    #+#             */
-/*   Updated: 2023/12/04 15:36:54 by jazarago         ###   ########.fr       */
+/*   Updated: 2023/12/04 15:30:40 by jazarago         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_saving_and_reading(int fd, char *saved)
 {
@@ -97,18 +97,18 @@ char	*save_update(char *saved)
 char	*get_next_line(int fd)
 {
 	char		*line;
-	static char	*save;
+	static char	*save[OPEN_MAX];
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 	{
-		if (save)
+		if (save[fd])
 			free(save);
 		return (NULL);
 	}
-	save = ft_saving_and_reading(fd, save);
-	if (!save)
+	save[fd] = ft_saving_and_reading(fd, save[fd]);
+	if (!save[fd])
 		return (NULL);
-	line = read_from_saved(save);
-	save = save_update(save);
+	line = read_from_saved(save[fd]);
+	save[fd] = save_update(save[fd]);
 	return (line);
 }
